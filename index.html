@@ -260,5 +260,22 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+        <script>
+        // Profile image auto-switcher
+        (function() {
+            const images = [
+                'assets/profile.png',
+                'assets/profile2.png'
+            ];
+            const N = 3000; // milliseconds
+            let idx = 0;
+            const img = document.querySelector('.profile-img');
+            if (!img) return;
+            setInterval(() => {
+                idx = (idx + 1) % images.length;
+                img.src = images[idx];
+            }, N);
+        })();
+        </script>
     </body>
 </html>
