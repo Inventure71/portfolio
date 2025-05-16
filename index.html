@@ -199,6 +199,21 @@
                     </div>
                 </div>
             </section>
+            <!-- Crystal Ball Bowl Section -->
+            <section class="bg-dark" style="padding-top: 0.5rem; padding-bottom: 2rem;">
+                <div class="container px-5">
+                    <div class="text-center" style="margin-bottom: 0.5rem;">
+                        <h2 class="display-5 fw-bolder"><span class="text-gradient d-inline">Discover My Projects</span></h2>
+                        <p class="lead fw-light text-light mb-0">Drag a crystal ball to the portal below to explore a project!</p>
+                    </div>
+                    <div id="crystal-ball-container" style="width: 100%; height: 450px; position: relative; margin: 0 auto;">
+                        <div id="project-drop-zone" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 150px; height: 70px; border: 2px dashed var(--bs-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--bs-light); font-size: 0.9rem; z-index: 10; background-color: rgba(0,0,0,0.3); -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; pointer-events: none;">
+                            Drop Ball Here<br/>to Open Project
+                        </div>
+                        <canvas id="crystal-ball-canvas"></canvas>
+                    </div>
+                </div>
+            </section>
             <!-- Statistics Section -->
             <section class="py-5" style="background-color: var(--bs-primary); color: var(--bs-light);">
                 <div class="container px-5">
@@ -260,6 +275,8 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+        <!-- Matter.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
         <script>
         // Profile image auto-switcher
         (function() {
@@ -267,7 +284,7 @@
                 'assets/profile.png',
                 'assets/profile2.png'
             ];
-            const N = 3000; // milliseconds
+            const N = 1500; // milliseconds
             let idx = 0;
             const img = document.querySelector('.profile-img');
             if (!img) return;
@@ -275,6 +292,252 @@
                 idx = (idx + 1) % images.length;
                 img.src = images[idx];
             }, N);
+        })();
+
+        // Crystal Ball Bowl Logic
+        (function() {
+            const container = document.getElementById('crystal-ball-container');
+            const canvas = document.getElementById('crystal-ball-canvas');
+            if (!container || !canvas) return;
+
+            const projectLinks = [
+                { name: "Budget Buddy", url: "project_details/project-budget-buddy.html" },
+                { name: "Neural Noir", url: "project_details/project-neural-noir.html" },
+                { name: "HoloVinyl", url: "project_details/project-holovinyl.html" },
+                { name: "AI Pokémon Card Generator", url: "project_details/project-pokemon-card-generator.html" },
+                { name: "VictorIA", url: "project_details/project-victoria.html" },
+                { name: "ReminderZ", url: "project_details/project-remainder-v0.html" }
+            ];
+
+            const Engine = Matter.Engine, Render = Matter.Render, Runner = Matter.Runner, Bodies = Matter.Bodies, Composite = Matter.Composite, MouseConstraint = Matter.MouseConstraint, Mouse = Matter.Mouse, World = Matter.World, Events = Matter.Events, Body = Matter.Body;
+
+            const engine = Engine.create({ gravity: { y: 0.4 } }); 
+            const world = engine.world;
+
+            const render = Render.create({
+                element: container,
+                canvas: canvas,
+                engine: engine,
+                options: {
+                    width: container.clientWidth,
+                    height: container.clientHeight,
+                    wireframes: false,
+                    background: 'transparent'
+                }
+            });
+            Render.run(render);
+            const runner = Runner.create();
+            Runner.run(runner, engine);
+
+            const canvasWidth = container.clientWidth;
+            const canvasHeight = container.clientHeight; // This height is for the canvas itself
+
+            // --- Create the Bowl --- 
+            const bowlSegments = [];
+            const bowlRadius = Math.min(canvasWidth, canvasHeight) * 0.4;
+            const bowlCenterX = canvasWidth / 2;
+            const bowlBottomY = canvasHeight * 0.85; 
+            const segmentAngleStep = Math.PI / 18; 
+            const bowlOpeningAngle = Math.PI / 2.5; 
+            const segmentLength = 25; 
+            const segmentThickness = 10; 
+            const bowlWallColor = 'rgba(100, 100, 100, 0.7)';
+
+            // Corrected angle loop for a proper bowl shape (open at the top)
+            // Angles are typically counter-clockwise from positive x-axis. Matter.js y is downwards.
+            // -PI/2 is top. PI/2 is bottom.
+            // We want walls from (top-left) around to (top-right)
+            const startAngle = -Math.PI / 2 + bowlOpeningAngle / 2; // e.g., -90deg + 36deg = -54deg (upper right opening edge)
+            const endAngle = (3 * Math.PI / 2) - bowlOpeningAngle / 2;   // e.g.,  270deg - 36deg = 234deg (upper left opening edge)
+
+            for (let angle = startAngle; angle <= endAngle; angle += segmentAngleStep) {
+                // Center of the circle forming the bowl's curve
+                const effectiveBowlCenterY = bowlBottomY - (bowlRadius * 0.7);
+                const x = bowlCenterX + bowlRadius * Math.cos(angle);
+                const y = effectiveBowlCenterY + bowlRadius * Math.sin(angle);
+                
+                const segment = Bodies.rectangle(x, y, segmentLength, segmentThickness, {
+                    isStatic: true,
+                    angle: angle + Math.PI / 2, 
+                    render: { fillStyle: bowlWallColor, strokeStyle: 'transparent' }
+                });
+                bowlSegments.push(segment);
+            }
+            World.add(world, bowlSegments);
+
+            // --- Create Mixer Blade ---
+            const mixerBladeWidth = bowlRadius * 0.6;
+            const mixerBladeHeight = 10;
+            const mixerBlade = Bodies.rectangle(bowlCenterX, bowlBottomY - (segmentThickness/2) - 5, mixerBladeWidth, mixerBladeHeight, {
+                isStatic: false, // Will be moved kinematically
+                density: 0.1, // Give it some mass to push balls
+                friction: 0.1,
+                render: { fillStyle: 'rgba(150, 150, 150, 0.8)' } // Metallic gray
+            });
+            World.add(world, mixerBlade);
+
+            // Pin the mixer blade to the center of the bowl bottom using a constraint
+            const mixerPin = Matter.Constraint.create({
+                bodyA: mixerBlade,
+                pointB: { x: bowlCenterX, y: bowlBottomY - (segmentThickness/2) - 5 },
+                stiffness: 1,
+                length: 0,
+                render: { visible: false }
+            });
+            World.add(world, mixerPin);
+
+            Events.on(engine, 'beforeUpdate', function(event) {
+                Body.setAngularVelocity(mixerBlade, 0.05); 
+            });
+
+            const crystalColors = [
+                // Luminous Clear Glass with a hint of color
+                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(31, 70, 197, 0.15)' },  // Blue hint
+                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(25, 135, 84, 0.15)' },  // Green hint
+                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(13, 202, 240, 0.15)' },  // Cyan hint
+                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(220, 220, 220, 0.15)' },// Light Gray hint
+                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(111, 66, 193, 0.15)' } // Purple hint
+            ];
+
+            const balls = [];
+            const numBalls = 20; 
+            const ballRadius = 15; 
+
+            for (let i = 0; i < numBalls; i++) {
+                // Ensure balls start within the bowl, above the mixer
+                // Try to spawn them more towards the center and above the bottom part of the bowl arc
+                const spawnRadius = bowlRadius * 0.5; // Spawn within 50% of bowl radius
+                const randomAngle = Math.random() * Math.PI + Math.PI/2; // Spawn in bottom half of a circle
+                const initialX = bowlCenterX + spawnRadius * Math.cos(randomAngle);
+                // Y position: start from center of bowl arc and go slightly up or down, but above mixer
+                const effectiveBowlCenterY = bowlBottomY - (bowlRadius * 0.7);
+                const initialY = effectiveBowlCenterY + spawnRadius * Math.sin(randomAngle) - ballRadius;
+
+
+                const randomColorSet = crystalColors[Math.floor(Math.random() * crystalColors.length)];
+                const randomProject = projectLinks[Math.floor(Math.random() * projectLinks.length)];
+
+                const ball = Bodies.circle(initialX, initialY, ballRadius, { // Use adjusted initialX, initialY
+                    restitution: 0.5, 
+                    friction: 0.02,    
+                    density: 0.0015,   
+                    render: { strokeStyle: 'transparent', lineWidth: 0 }
+                });
+                ball.projectUrl = randomProject.url;
+                ball.projectName = randomProject.name;
+                ball.colorSet = randomColorSet; 
+                balls.push(ball);
+            }
+            World.add(world, balls);
+
+            Events.on(render, 'afterRender', function() {
+                const context = render.context;
+                balls.forEach(ball => {
+                    const gradient = context.createRadialGradient(ball.position.x, ball.position.y, 0, ball.position.x, ball.position.y, ballRadius);
+                    gradient.addColorStop(0, ball.colorSet.inner);
+                    gradient.addColorStop(1, ball.colorSet.outer);
+                    
+                    context.beginPath();
+                    context.arc(ball.position.x, ball.position.y, ballRadius, 0, 2 * Math.PI);
+                    context.fillStyle = gradient;
+                    context.fill();
+                });
+            });
+
+            const mouse = Mouse.create(render.canvas);
+            const mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: {
+                    stiffness: 0.1, 
+                    render: { visible: false }
+                }
+            });
+            World.add(world, mouseConstraint);
+            render.mouse = mouse;
+
+            // Variables to manage click vs. drag and drop zone
+            const dropZoneElement = document.getElementById('project-drop-zone');
+            let draggedBall = null;
+
+
+            Events.on(mouseConstraint, 'startdrag', function(event) {
+                if (balls.includes(event.body)) {
+                    draggedBall = event.body;
+                }
+            });
+
+            Events.on(mouseConstraint, 'enddrag', function(event) {
+                if (draggedBall && dropZoneElement) {
+                    const ballPosition = draggedBall.position;
+                    const dzRect = dropZoneElement.getBoundingClientRect();
+                    const canvasRect = canvas.getBoundingClientRect();
+
+                    const dzTop = dzRect.top - canvasRect.top;
+                    const dzLeft = dzRect.left - canvasRect.left;
+                    const dzRight = dzLeft + dzRect.width;
+                    const dzBottom = dzTop + dzRect.height;
+
+                    if (ballPosition.x >= dzLeft && ballPosition.x <= dzRight &&
+                        ballPosition.y >= dzTop && ballPosition.y <= dzBottom) {
+                        
+                        if (draggedBall.projectUrl) {
+                            console.log("Attempting to navigate to:", draggedBall.projectUrl);
+                            dropZoneElement.style.backgroundColor = 'rgba(var(--bs-success-rgb), 0.5)';
+                            dropZoneElement.textContent = 'Opening...';
+                            
+                            // Attempt navigation
+                            window.location.href = draggedBall.projectUrl;
+                        }
+                    }
+                }
+                draggedBall = null; 
+            });
+
+            // Optional: Highlight drop zone when a ball is dragged over it
+            Events.on(engine, 'beforeUpdate', function() {
+                if (draggedBall && dropZoneElement) {
+                    const ballPosition = draggedBall.position;
+                    const dzRect = dropZoneElement.getBoundingClientRect();
+                    const canvasRect = canvas.getBoundingClientRect();
+
+                    const dzTop = dzRect.top - canvasRect.top;
+                    const dzLeft = dzRect.left - canvasRect.left;
+                    const dzRight = dzLeft + dzRect.width;
+                    const dzBottom = dzTop + dzRect.height;
+
+                    if (ballPosition.x >= dzLeft && ballPosition.x <= dzRight &&
+                        ballPosition.y >= dzTop && ballPosition.y <= dzBottom) {
+                        dropZoneElement.style.borderColor = 'var(--bs-success)';
+                        dropZoneElement.style.boxShadow = '0 0 10px var(--bs-success)';
+                    } else {
+                        dropZoneElement.style.borderColor = 'var(--bs-primary)';
+                        dropZoneElement.style.boxShadow = 'none';
+                    }
+                } else if (dropZoneElement) { // Reset if no ball is being dragged
+                    dropZoneElement.style.borderColor = 'var(--bs-primary)';
+                    dropZoneElement.style.boxShadow = 'none';
+                }
+            });
+
+
+            Render.lookAt(render, { min: { x: 0, y: 0 }, max: { x: canvasWidth, y: canvasHeight } });
+            
+            // Basic resize handling (might need more robust solution for complex shapes)
+            // For this iteration, the bowl and mixer are not dynamically resized, 
+            // which might lead to visual issues if the container resizes significantly.
+            // A full solution would involve removing and re-creating these static/kinematic elements.
+            window.addEventListener('resize', function() {
+                const newWidth = container.clientWidth;
+                const newHeight = container.clientHeight;
+                render.options.width = newWidth;
+                render.options.height = newHeight;
+                render.canvas.width = newWidth;
+                render.canvas.height = newHeight;
+                // Note: Bowl segments and mixer are NOT resized/repositioned here.
+                // This would require recalculating their geometry and positions.
+                Render.lookAt(render, { min: { x: 0, y: 0 }, max: { x: newWidth, y: newHeight } });
+            });
+
         })();
         </script>
     </body>
