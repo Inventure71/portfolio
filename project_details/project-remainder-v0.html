@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details: ReminderZ</title>
+    <link href="../css/styles.css" rel="stylesheet" />
+    <!-- Bootstrap icons (already in main projects.html, but good for standalone viewing) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        /* body already uses bg-dark and text-light from ../css/styles.css */
+        .container.project-section { /* Ensure specificity if needed */
+            max-width: 960px;
+        }
+        h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--bs-primary); /* Bootstrap primary color for headings */
+        }
+        h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--bs-info); /* A slightly different color for sub-subheadings */
+        }
+        ul, ol {
+            padding-left: 1.5rem; /* Standard padding for lists */
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #343a40; /* A slightly lighter dark for code blocks */
+            padding: 1em;
+            border-radius: 0.3rem;
+            border: 1px solid #495057;
+            color: #f8f9fa;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        code { /* Inline code */
+            color: #e83e8c; /* Pinkish for inline code */
+            background-color: rgba(232, 62, 140, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 0.2rem;
+        }
+        .lead {
+            font-size: 1.15rem; /* Slightly larger lead paragraph */
+            font-weight: 300;
+        }
+        .project-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        .btn-github {
+            background-color: #333;
+            color: #fff;
+            border-color: #444; /* Slightly lighter border for definition */
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+        .btn-github:hover, .btn-github:focus {
+            background-color: #222;
+            color: #fff;
+            border-color: #333;
+        }
+        .btn-github .bi-github {
+            margin-right: 8px;
+            vertical-align: text-bottom; /* Better icon alignment */
+        }
+        .dev-name {
+            font-size: 0.9rem;
+            color: var(--bs-gray-500); /* Softer color for dev name */
+            display: block;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column h-100 bg-dark text-light"> <!-- Ensure d-flex for footer push -->
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+        <div class="container px-5">
+            <a class="navbar-brand" href="../index.html"><span class="fw-bolder">Matteo Giorgetti</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContentProjectDetail" aria-controls="navbarSupportedContentProjectDetail" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContentProjectDetail">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
+                    <li class="nav-item"><a class="nav-link text-light" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="../resume.html">Resume</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="../projects.html">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="../contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-shrink-0">
+        <div class="container px-5 py-5 project-section">
+            <div class="text-center mb-4">
+                <h1 class="display-4 fw-bolder mb-1"><span class="text-gradient d-inline">ReminderZ</span></h1>
+                <span class="dev-name">(Development name: RemainderV0)</span>
+                <a href="https://github.com/Inventure71/RemainderV0" class="btn btn-github btn-lg px-4 py-3" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-github"></i>View on GitHub
+                </a>
+            </div>
+
+            <p class="lead mb-4">ReminderZ (formerly RemainderV0) is a desktop application designed to help users manage messages, notes, reminders, and projects, with AI-powered features for organization and content generation. It utilizes a Python backend with a <code>pywebview</code> frontend (HTML, CSS, JavaScript) for a cross-platform user experience.</p>
+
+            <h2>Core Features</h2>
+            <ul>
+                <li><strong>Message Management:</strong> Efficiently store, organize, and retrieve messages, notes, and creative ideas. Assign items to user-defined projects and attach relevant images.</li>
+                <li><strong>Project Organization:</strong> Create, customize (name, description, color, emoji), and manage projects. View messages filtered by project for focused work.</li>
+                <li><strong>AI Integration (Gemini Model):</strong>
+                    <ul>
+                        <li>Engage in contextual AI chat.</li>
+                        <li>Automate message processing: assign to projects, identify potential reminders.</li>
+                        <li>Receive suggestions for new projects based on unassigned content.</li>
+                        <li>Generate textual descriptions for uploaded images.</li>
+                        <li>Select messages relevant to user queries via AI.</li>
+                    </ul>
+                </li>
+                <li><strong>Reminders:</strong> Set precise reminders with specific dates, times, and recurrence options (daily, weekly). Receive desktop notifications (macOS specific) for timely alerts.</li>
+                <li><strong>Clipboard Integration (macOS specific):</strong> Monitor the system clipboard and automatically save copied text to a dedicated "Saved Clips" project after a configurable number of copies.</li>
+                <li><strong>Telegram Integration:</strong> Fetch messages and attachments directly from a configured Telegram bot, storing them in the application's database and as JSON logs.</li>
+                <li><strong>WhatsApp Scraper Integration:</strong> Trigger a utility script to scrape messages from WhatsApp Web (current implementation prints to console).</li>
+                <li><strong>Image Handling:</strong> Upload and associate images with messages. View AI-generated descriptions for visual content.</li>
+            </ul>
+
+            <h2>Key Technologies</h2>
+            <ul>
+                <li><strong>Backend:</strong> Python</li>
+                <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+                <li><strong>GUI Framework:</strong> <code>pywebview</code> (embedding web content in a native GUI window)</li>
+                <li><strong>AI Model:</strong> Google Gemini</li>
+                <li><strong>Database:</strong> SQLite (for local data storage)</li>
+                <li><strong>macOS specific features:</strong> <code>AppKit</code> (via PyObjC for clipboard and status bar), <code>osascript</code> (for desktop notifications)</li>
+                <li><strong>Web Scraping:</strong> Selenium (for WhatsApp automation)</li>
+            </ul>
+            
+            <h2>Project Structure Highlights</h2>
+            <p>The application is modularly structured:</p>
+            <ul>
+                <li><code>main.py</code>: Core backend logic and <code>pywebview</code> initialization.</li>
+                <li><code>web/</code>: Contains all frontend assets (HTML, CSS, JS), including pages and reusable components.</li>
+                <li><code>DatabaseUtils/</code>: Python modules for SQLite database interactions (messages, projects, clipboard).</li>
+                <li><code>Utils/</code>: Houses utility modules like the AI model handler (<code>model_handler.py</code>), clipboard monitor, reminder scheduler, and integration scripts (Telegram, WhatsApp).</li>
+                <li><code>API_keys/</code>: Stores API credentials (e.g., <code>gemini_api_key.json</code>).</li>
+                <li><code>settings.json</code>: Application settings.</li>
+            </ul>
+
+            <h2>Setup & Running</h2>
+            <p>To get ReminderZ running locally:</p>
+            <ol>
+                <li>Ensure Python 3.x is installed.</li>
+                <li>Obtain a Gemini API key and place it in <code>API_keys/gemini_api_key.json</code>.</li>
+                <li>For Telegram features, configure <code>BOT_TOKEN</code> in a <code>.env</code> file.</li>
+                <li>Clone the repository and install dependencies:
+                    <pre><code>pip install -r requirements.txt</code></pre>
+                    (Note: The original README mentioned a <code>requirements.txt</code> file needs to be generated. Likely dependencies include <code>pywebview</code>, <code>google-generativeai</code>, <code>requests</code>, <code>python-dotenv</code>, <code>AppKit</code>, <code>selenium</code>, <code>python-dateutil</code>.)
+                </li>
+                <li>Run the application:
+                    <pre><code>python main.py</code></pre>
+                </li>
+            </ol>
+            <p><em>Note: macOS specific features require running on macOS. WhatsApp scraping requires Google Chrome.</em></p>
+
+
+            <h2>Building</h2>
+            <p>The application can be packaged into a standalone executable using PyInstaller with the provided <code>RemainderApp.spec</code> file:</p>
+            <pre><code>pyinstaller RemainderApp.spec</code></pre>
+
+            <div class="text-center mt-5 mb-4">
+                <a href="../projects.html" class="btn btn-primary btn-lg px-4 py-3">Back to Projects</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-auto bg-dark text-light"> <!-- Explicitly set bg-dark text-light if not inherited -->
+        <div class="container px-5">
+            <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                <div class="col-auto"><div class="small m-0">Copyright &copy; Matteo Giorgetti 2025</div></div> <!-- Assuming name from navbar, year from original footer -->
+                <div class="col-auto">
+                    <a class="small text-light" href="#!">Privacy</a>
+                    <span class="mx-1 text-light">&middot;</span>
+                    <a class="small text-light" href="#!">Terms</a>
+                    <span class="mx-1 text-light">&middot;</span>
+                    <a class="small text-light" href="#!">Contact</a> <!-- Links should be text-light to be visible on dark footer -->
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS (if your site has a global one for all pages) -->
+    <!-- <script src="../js/scripts.js"></script> -->
+</body>
+</html> 
