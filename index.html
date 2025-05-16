@@ -207,10 +207,16 @@
                         <p class="lead fw-light text-light mb-0">Drag a crystal ball to the portal below to explore a project!</p>
                     </div>
                     <div id="crystal-ball-container" style="width: 100%; height: 450px; position: relative; margin: 0 auto;">
+                        <!-- Jar Background Layer -->
+                        <img src="assets/Jar_background.png" alt="Jar Background" style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: auto; opacity: 0.7; pointer-events: none; z-index: 1;">
+                        
                         <div id="project-drop-zone" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 150px; height: 70px; border: 2px dashed var(--bs-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--bs-light); font-size: 0.9rem; z-index: 10; background-color: rgba(0,0,0,0.3); -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; pointer-events: none;">
                             Drop Ball Here<br/>to Open Project
                         </div>
-                        <canvas id="crystal-ball-canvas"></canvas>
+                        <canvas id="crystal-ball-canvas" style="position: relative; z-index: 2;"></canvas>
+                        
+                        <!-- Jar Foreground Layer -->
+                        <img src="assets/Jar_foreground.png" alt="Jar Foreground" style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: auto; opacity: 0.7; pointer-events: none; z-index: 3;">
                     </div>
                 </div>
             </section>
@@ -359,7 +365,7 @@
                 const segment = Bodies.rectangle(x, y, segmentLength, segmentThickness, {
                     isStatic: true,
                     angle: angle + Math.PI / 2, 
-                    render: { fillStyle: bowlWallColor, strokeStyle: 'transparent' }
+                    render: { visible: false } // Make original bowl segments invisible
                 });
                 bowlSegments.push(segment);
             }
@@ -391,12 +397,12 @@
             });
 
             const crystalColors = [
-                // Luminous Clear Glass with a hint of color
-                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(31, 70, 197, 0.15)' },  // Blue hint
-                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(25, 135, 84, 0.15)' },  // Green hint
-                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(13, 202, 240, 0.15)' },  // Cyan hint
-                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(220, 220, 220, 0.15)' },// Light Gray hint
-                { inner: 'rgba(255, 255, 255, 0.4)', outer: 'rgba(111, 66, 193, 0.15)' } // Purple hint
+                // Luminous Crystal Light Sources
+                { inner: 'rgba(255, 255, 255, 0.8)', outer: 'rgba(31, 70, 197, 0.35)' },  // Luminous Blue
+                { inner: 'rgba(255, 255, 255, 0.8)', outer: 'rgba(25, 135, 84, 0.35)' },  // Luminous Green
+                { inner: 'rgba(255, 255, 255, 0.8)', outer: 'rgba(13, 202, 240, 0.35)' },  // Luminous Cyan
+                { inner: 'rgba(255, 255, 255, 0.8)', outer: 'rgba(220, 220, 220, 0.30)' },// Luminous Light Gray/White
+                { inner: 'rgba(255, 255, 255, 0.8)', outer: 'rgba(111, 66, 193, 0.35)' } // Luminous Purple
             ];
 
             const balls = [];
