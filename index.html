@@ -461,6 +461,11 @@
             World.add(world, mouseConstraint);
             render.mouse = mouse;
 
+            // Fix scrolling issue by removing wheel event listeners from MouseConstraint
+            mouse.element.removeEventListener('wheel', mouse.mousewheel);
+            mouse.element.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+            mouse.element.removeEventListener('mousewheel', mouse.mousewheel);
+
             // Variables to manage click vs. drag and drop zone
             const dropZoneElement = document.getElementById('project-drop-zone');
             let draggedBall = null;
